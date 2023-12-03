@@ -1,5 +1,11 @@
 from aocd.models import Puzzle
 from typing import Callable
+from glob import glob
+import shutil
+
+def invalidate_cache():
+    shutil.rmtree(glob("*gergelyth*")[0])
+    shutil.rmtree("prose")
 
 # As arguments, we take the puzzle and the algorithm which computes answer A and answer B.
 def test_and_submit(puzzle: Puzzle, algorithm: Callable[[str], tuple[any, any]], dry_run: bool = True):
@@ -16,9 +22,13 @@ def test_and_submit(puzzle: Puzzle, algorithm: Callable[[str], tuple[any, any]],
         return
     
     live_result = algorithm(puzzle.input_data)
+    
     if not puzzle.answered_a:
         puzzle.answer_a = live_result[0]
+        if puzzle.anwered_a:
+            invalidate_cache()
         return
+        
     if not puzzle.answered_b:
         puzzle.answer_b = live_result[1]
         return
