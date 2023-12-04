@@ -4,8 +4,8 @@ from glob import glob
 import shutil
 
 def invalidate_cache():
-    shutil.rmtree(glob("*gergelyth*")[0])
-    shutil.rmtree("prose")
+    shutil.rmtree(glob("~/.config/aocd/*gergelyth*")[0])
+    shutil.rmtree("~/.config/aocd/prose")
 
 # As arguments, we take the puzzle and the algorithm which computes answer A and answer B.
 def test_and_submit(puzzle: Puzzle, algorithm: Callable[[str], tuple[any, any]], dry_run: bool = True):
@@ -25,7 +25,7 @@ def test_and_submit(puzzle: Puzzle, algorithm: Callable[[str], tuple[any, any]],
     
     if not puzzle.answered_a:
         puzzle.answer_a = live_result[0]
-        if puzzle.anwered_a:
+        if puzzle.answered_a:
             invalidate_cache()
         return
         
