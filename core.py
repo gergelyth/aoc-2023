@@ -4,8 +4,8 @@ from glob import glob
 import shutil
 
 def invalidate_cache():
-    shutil.rmtree(glob("~/.config/aocd/*gergelyth*")[0])
-    shutil.rmtree("~/.config/aocd/prose")
+    shutil.rmtree(glob("/home/vscode/.config/aocd/*gergelyth*")[0])
+    shutil.rmtree("/home/vscode/.config/aocd/prose")
 
 # As arguments, we take the puzzle and the algorithm which computes answer A and answer B.
 def test_and_submit(puzzle: Puzzle, algorithm: Callable[[str], tuple[any, any]], dry_run: bool = True):
