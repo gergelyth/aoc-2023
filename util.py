@@ -12,3 +12,7 @@ def get_item(matrix: list[list[str]], row: int, col: int) -> any:
 
 def get_blocks(input: str) -> list[list[str]]:
     return input.split("\n\n")
+
+def get_range_overlap(x: tuple[int,int], y: tuple[int,int]) -> tuple[int,int] | None:
+    overlap = max(x[0], y[0]), min(x[1], y[1])
+    return overlap if overlap[0] <= overlap[1] else None

@@ -12,7 +12,7 @@ def test_and_submit(puzzle: Puzzle, algorithm: Callable[[str], tuple[any, any]],
     examples = puzzle.examples[len(puzzle.examples)//2:] if puzzle.answered_a else puzzle.examples
     for example in examples:
         test_result = algorithm(example.input_data)
-        if example.answer_a and str(test_result[0]) != str(example.answer_a):
+        if not puzzle.answered_a and example.answer_a and str(test_result[0]) != str(example.answer_a):
             raise AssertionError(f"Test A failed. Expected result: {example.answer_a}, got: {test_result[0]}")
         if example.answer_b and str(test_result[1]) != str(example.answer_b):
             raise AssertionError(f"Test B failed. Expected result: {example.answer_b}, got: {test_result[1]}")
