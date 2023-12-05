@@ -9,3 +9,6 @@ def get_item(matrix: list[list[str]], row: int, col: int) -> any:
         return None
 
     return matrix[row][col]
+
+def get_blocks(input: str) -> list[list[str]]:
+    return input.split("\n\n")
