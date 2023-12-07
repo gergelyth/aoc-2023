@@ -28,22 +28,14 @@ class Hand:
         #we want to give higher weight to earlier elements
         return len(hand_type_order) - index
         
-def compare_cards(first: str, second: str) -> int:
-    order = ["A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J"]
-    # this is the other way because we want ascending order
-    return order.index(second) - order.index(first)    
-
 def compare_hands(first: Hand, second: Hand) -> int:
     #returns a negative number if first is a lower hand
     if first.type != second.type:
         return first.type - second.type
     
-    for i in range(5):
-        card_comparison = compare_cards(first.hand[i], second.hand[i])
-        if card_comparison != 0:
-            return card_comparison
-        
-    return 0
+    card_order = ["A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J"]
+    sorted_hands = sorted([first.hand, second.hand], key=lambda hand: [card_order.index(c) for c in hand], reverse=True)
+    return -1 if sorted_hands[0] == first.hand else 1
 
 def solution(input: str) -> tuple[any, any]:
     lines = get_lines(input)
