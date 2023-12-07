@@ -2,7 +2,7 @@ from aocd.models import Puzzle
 
 from core import test_and_submit
 from functools import cmp_to_key
-from util import get_lines
+from util import get_lines, first_list_contains_second
 from collections import Counter
 
 class Hand:
@@ -21,22 +21,12 @@ class Hand:
         max_card = max(card_count, key=card_count.get, default="A")
         card_count[max_card] = card_count[max_card] + jokers
         counts = list(card_count.values())
-        if 5 in counts:
-            return 6
-        if 4 in counts:
-            return 5
-        if 3 in counts and 2 in counts:
-            #full house
-            return 4
-        if 3 in counts:
-            #three of a kind
-            return 3
-        if counts.count(2) == 2:
-            return 2
-        if 2 in counts:
-            return 1
-        
-        return 0
+
+        hand_type_order = [[5], [4], [3,2], [3], [2,2], [2], [1]]
+        #find index of the combination which is included in our hand
+        index = next(i for i, hand_type in enumerate(hand_type_order) if first_list_contains_second(counts, hand_type))
+        #we want to give higher weight to earlier elements
+        return len(hand_type_order) - index
         
 def compare_cards(first: str, second: str) -> int:
     order = ["A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J"]

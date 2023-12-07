@@ -1,3 +1,5 @@
+from collections import Counter
+
 def get_lines(input: str) -> list[str]:
     return input.splitlines()
 
@@ -16,3 +18,6 @@ def get_blocks(input: str) -> list[list[str]]:
 def get_range_overlap(x: tuple[int,int], y: tuple[int,int]) -> tuple[int,int] | None:
     overlap = max(x[0], y[0]), min(x[1], y[1])
     return overlap if overlap[0] <= overlap[1] else None
+
+def first_list_contains_second(first: list[int], second: list[int]) -> bool:
+    return not (Counter(second) - Counter(first))
