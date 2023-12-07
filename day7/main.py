@@ -16,6 +16,10 @@ class Hand:
         card_count = Counter(hand)
         #we have 7 types, 7 is the highest (five of a kind), no time for an enum
         # print(card_count)
+        jokers = card_count.pop("J", 0)
+        #if we have 5 jokers, we default to 5 aces
+        max_card = max(card_count, key=card_count.get, default="A")
+        card_count[max_card] = card_count[max_card] + jokers
         counts = list(card_count.values())
         if 5 in counts:
             return 6
@@ -35,7 +39,7 @@ class Hand:
         return 0
         
 def compare_cards(first: str, second: str) -> int:
-    order = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"]
+    order = ["A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J"]
     # this is the other way because we want ascending order
     return order.index(second) - order.index(first)    
 
@@ -60,7 +64,7 @@ def solution(input: str) -> tuple[any, any]:
     for rank, hand in enumerate(sorted_hands):
         sum_result += (rank+1) * hand.bid
 
-    return (sum_result, None)
+    return (None, sum_result)
 
 puzzle = Puzzle(2023, 7)
 test_and_submit(puzzle, solution, False)
