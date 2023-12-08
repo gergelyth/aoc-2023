@@ -5,14 +5,30 @@ from core import test_and_submit
 from util import get_lines
 
 class Path:
-    def __init__(self, desert_map: dict[str, tuple[str,str]], starting_node: str) -> None:
-        self.desert_map = desert_map
+    def __init__(self, short_map: dict[str, tuple[str,set[int]]], starting_node: str) -> None:
+        self.short_map = short_map
         self.current_node = starting_node
         
-    #return did finish flag
-    def iterate(self, direction: int) -> bool:
-        self.current_node = self.desert_map[self.current_node][direction]
-        return self.current_node[-1] == "Z"
+    def get_ending_steps(self) -> set[int]:
+        ending_steps = self.short_map[self.current_node][1]
+        self.current_node = self.short_map[self.current_node][0]
+        return ending_steps
+    
+def get_short_map(desert_map: dict[str, tuple[str,str]], instructions: str) -> dict[str, tuple[str, set[int]]]:
+    short_map = {}
+    for node in desert_map:
+        current_node = node
+        steps_to_end = set()
+        for i, instruction in enumerate(instructions):
+            direction = 0 if instruction == "L" else 1
+            current_node = desert_map[current_node][direction]
+            if current_node[-1] == "Z":
+                steps_to_end.add(i+1)
+        
+        #ending node and finishing steps
+        short_map[node] = (current_node, steps_to_end)
+
+    return short_map
 
 def solution(input: str) -> tuple[any, any]:
     lines = get_lines(input)
@@ -29,25 +45,25 @@ def solution(input: str) -> tuple[any, any]:
         if from_node[-1] == "A":
             starting_points.append(from_node)
             
-        desert_map[from_node] =  (left, right)
+        desert_map[from_node] = (left, right)
         
-    paths = [Path(desert_map, starting_node) for starting_node in starting_points]
+    #we increase the length of the instruction to increase performance - this finishes in 2 minutes
+    heuristic_instruction = instructions * 5000
+    short_map = get_short_map(desert_map, heuristic_instruction)
+    paths = [Path(short_map, starting_node) for starting_node in starting_points]
+
     steps = 0
-    all_finished = False
-    while (not all_finished):
-        for instruction in instructions:
-            direction = 0 if instruction == "L" else 1
-            all_finished = True
-
-            for path in paths:
-                all_finished &= path.iterate(direction)
-
-            steps += 1
-            if all_finished:
-                break
-            
-        print(steps)
-    
+    finish_timestep = None
+    while not finish_timestep:
+        ending_step_sets = [path.get_ending_steps() for path in paths]
+        intersection = set.intersection(*ending_step_sets)
+        #we take min so in case we multiple finishing timesteps, we take the first one
+        finish_timestep = min(intersection, default=None)
+        if finish_timestep:
+            steps += finish_timestep
+            break
+        steps += len(heuristic_instruction)
+        
     return (None, steps)
 
 puzzle = Puzzle(2023, 8)
