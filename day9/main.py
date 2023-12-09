@@ -1,20 +1,21 @@
 from aocd.models import Puzzle
 from itertools import pairwise
+from functools import reduce
 
 from core import test_and_submit
 from util import get_lines
 
 def process_line(line: str) -> int:
     sequence = [int(x) for x in line.split(" ")]
-    last_values = [sequence[-1]]
+    first_values = [sequence[0]]
     
     #while there is a differing value
     while sequence.count(sequence[0]) != len(sequence):
         sequence = [y - x for (x, y) in pairwise(sequence)]
-        last_values.append(sequence[-1])
+        first_values.append(sequence[0])
         
-    #we only need to add the last values in the lines together as the extrapolated value is just this
-    return sum(last_values)
+    #substract the first values from each other to extrapolate the first value
+    return reduce(lambda x, y: y - x, reversed(first_values))
 
 def solution(input: str) -> tuple[any, any]:
     lines = get_lines(input)
@@ -22,7 +23,7 @@ def solution(input: str) -> tuple[any, any]:
     for line in lines:
         result_sum += process_line(line)
             
-    return (result_sum, None)
+    return (None, result_sum)
 
 puzzle = Puzzle(2023, 9)
 test_and_submit(puzzle, solution, False)
