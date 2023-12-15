@@ -11,6 +11,15 @@ class Matrix:
             return None
 
         return self.matrix[row][col]
+
+    def set_item(self, row: int, col: int, item: any) -> None:
+        if row < 0 or row >= self.row_count or col < 0 or col >= self.col_count:
+            return
+        self.matrix[row][col] = item
+        
+    def print(self) -> None:
+        for row in range(self.row_count):
+            print("".join([self.matrix[row][col] for col in range(self.col_count)]))
     
 def get_lines(input: str) -> list[str]:
     return input.splitlines()
