@@ -17,6 +17,12 @@ class Matrix:
             return
         self.matrix[row][col] = item
         
+    def __str__(self) -> str:
+        rows = []
+        for row in range(self.row_count):
+            rows.append("".join([self.matrix[row][col] for col in range(self.col_count)]))
+        return ",".join(rows)
+
     def print(self) -> None:
         for row in range(self.row_count):
             print("".join([self.matrix[row][col] for col in range(self.col_count)]))
