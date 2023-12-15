@@ -15,6 +15,12 @@ class Matrix:
 def get_lines(input: str) -> list[str]:
     return input.splitlines()
 
+def get_columns(lines: list[str]) -> list[str]:
+    columns = []
+    for i in range(len(lines[0])):
+        columns.append(str([line[i] for line in lines]))
+    return columns
+
 def get_2d_array(input: str) -> list[list[str]]:
     return [list(line) for line in get_lines(input)]
 
