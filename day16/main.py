@@ -43,10 +43,9 @@ class Beam:
                 
         self.current_pos = add_tuples(self.current_pos, directions[self.direction])
         return new_beam
-
-def solution(input: str) -> tuple[any, any]:
-    matrix = Matrix(input)
-    beams = [Beam((0, 0), "right")]
+    
+def simulate_beam(matrix: Matrix, beam: Beam) -> int:
+    beams = [beam]
     visited = {}
     while len(beams) > 0:
         new_beams = []
@@ -65,7 +64,25 @@ def solution(input: str) -> tuple[any, any]:
                 
         beams.extend(list(filter(None, new_beams)))
         
-    return (len(visited), None)
+    return len(visited)
+
+def solution(input: str) -> tuple[any, any]:
+    matrix = Matrix(input)
+    configuration_results = []
+    for row in range(matrix.row_count):
+        result = simulate_beam(matrix, Beam((row, 0), "right"))
+        configuration_results.append(result)
+    for col in range(matrix.col_count):
+        result = simulate_beam(matrix, Beam((0, col), "down"))
+        configuration_results.append(result)
+    for row in range(matrix.row_count):
+        result = simulate_beam(matrix, Beam((row, matrix.col_count-1), "left"))
+        configuration_results.append(result)
+    for col in range(matrix.col_count):
+        result = simulate_beam(matrix, Beam((matrix.row_count-1, col), "up"))
+        configuration_results.append(result)
+
+    return (None, max(configuration_results))
 
 puzzle = Puzzle(2023, 16)
 test_and_submit(puzzle, solution, False)
