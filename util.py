@@ -1,10 +1,20 @@
 from collections import Counter
 
+directions = {
+    "up": (-1, 0),
+    "down": (1, 0),
+    "left": (0, -1),
+    "right": (0, 1)
+}
+
 class Matrix:
     def __init__(self, input: str) -> None:
         self.matrix = get_2d_array(input)
         self.row_count = len(self.matrix)
         self.col_count = len(self.matrix[0])
+
+    def get_item_pos(self, position: tuple[int, int]) -> any:
+        return self.get_item(position[0], position[1])
 
     def get_item(self, row: int, col: int) -> any:
         if row < 0 or row >= self.row_count or col < 0 or col >= self.col_count:
@@ -26,7 +36,7 @@ class Matrix:
     def print(self) -> None:
         for row in range(self.row_count):
             print("".join([self.matrix[row][col] for col in range(self.col_count)]))
-    
+            
 def get_lines(input: str) -> list[str]:
     return input.splitlines()
 
@@ -48,3 +58,6 @@ def get_range_overlap(x: tuple[int,int], y: tuple[int,int]) -> tuple[int,int] | 
 
 def first_list_contains_second(first: list[int], second: list[int]) -> bool:
     return not (Counter(second) - Counter(first))
+
+def add_tuples(first: tuple, second: tuple) -> tuple:
+    return tuple(map(lambda x, y: x + y, first, second))
