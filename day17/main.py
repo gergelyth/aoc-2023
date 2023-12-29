@@ -27,7 +27,7 @@ def dijkstra(matrix: Matrix, start: tuple[int,int], goal: tuple[int,int]):
         new_cost = cost + int(new_position_cost)
 
         # found the target with a good path
-        if new_position == goal and dir_count <= 3:
+        if new_position == goal and 4 <= dir_count <= 10:
             return new_cost
             
         for candidate_dir in directions:
@@ -37,7 +37,7 @@ def dijkstra(matrix: Matrix, start: tuple[int,int], goal: tuple[int,int]):
 
             new_dir_count = dir_count + 1 if candidate_dir == direction else 1
             #we can't go 4 blocks straight
-            if new_dir_count > 3:
+            if (candidate_dir != direction and dir_count < 4) or new_dir_count > 10:
                 continue
             
             heapq.heappush(queue, (new_cost, new_position, candidate_dir, new_dir_count))
@@ -46,7 +46,7 @@ def solution(input: str) -> tuple[any, any]:
     matrix = Matrix(input)
     target = (matrix.row_count-1, matrix.col_count-1)
     result = dijkstra(matrix, (0, 0), target)
-    return (result, None)
+    return (None, result)
 
 puzzle = Puzzle(2023, 17)
 test_and_submit(puzzle, solution, False)
