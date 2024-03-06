@@ -3,6 +3,8 @@ from typing import Literal
 import re
 from collections import defaultdict 
 from aocd.models import Puzzle
+import math
+import numpy as np
 
 from core import test_and_submit
 from util import get_lines
@@ -16,6 +18,7 @@ class Pulse:
 class Module:
     def __init__(self, name: str) -> None:
         self.name = name
+        self.should_record = False
         
     def set_connections(self, inputs: list[Module], destinations: list[Module]) -> None:
         self.inputs = inputs
@@ -31,7 +34,13 @@ class Module:
         return [Pulse(self, destination, "low") for destination in self.destinations]
 
     def send_high_pulse(self) -> list[Pulse]:
+        if self.should_record:
+            self.func(self)
         return [Pulse(self, destination, "high") for destination in self.destinations]
+    
+    def record_high_pulse(self, func) -> None:
+        self.func = func
+        self.should_record = True
     
 class FlipFlopModule(Module):
     def __init__(self, name: str) -> None:
@@ -63,7 +72,7 @@ class ConjunctionModule(Module):
             return self.send_low_pulse()
         else:
             return self.send_high_pulse()
-            
+        
 class BroadcastModule(Module):
     def low_pulse(self, sender: Module) -> list[Pulse]:
         return self.send_low_pulse()
@@ -115,35 +124,38 @@ def solution(input: str) -> tuple[any, any]:
     lines = get_lines(input)
     modules = prepare_modules(lines)
     
-    total_low_pulses = 0
-    total_high_pulses = 0
-    
     broadcaster = modules["broadcaster"]
-    for _ in range(1000):
+    
+    button_press = 0
+    modules_of_interest = {}
+    #Get the first state when the inputs of the module which reaches rx deliver a high pulse
+    #Then just find the least common multiple of those - that will trigger the low pulse from "vr"
+    for i in modules["vr"].inputs:
+        modules_of_interest[i] = []
+        
+    def func(module):
+        modules_of_interest[module].append(button_press)
+        # print(f"{module.name} delivered a high pulse at {button_press}")
+        
+    for key, _ in modules_of_interest.items():
+        key.record_high_pulse(func)
+
+    while any(len(iteration) == 0 for iteration in modules_of_interest.values()):
+        button_press += 1
+
         pulse_queue = []
         pulse_queue += broadcaster.low_pulse(None)
-        total_low_pulses += 1 + len(pulse_queue)
-
+        
         while len(pulse_queue) > 0:
             pulse = pulse_queue.pop(0)
+                
             result_pulses = pulse.destination.low_pulse(pulse.sender) if pulse.type == "low" else pulse.destination.high_pulse(pulse.sender)
             pulse_queue += result_pulses
-            
-            #we only ever send the same type of pulse for all destinations
-            if len(result_pulses) > 0:
-                if result_pulses[0].type == "low":
-                    total_low_pulses += len(result_pulses)
-                else:
-                    total_high_pulses += len(result_pulses)
 
-    return (total_low_pulses*total_high_pulses, None)
+    # result = math.lcm(modules_of_interest.values())
+    result = np.lcm.reduce([*modules_of_interest.values()])[0]
+    print(result)
+    return (None, result)
 
 puzzle = Puzzle(2023, 20)
-# input="""broadcaster -> a
-# %a -> inv, con
-# &inv -> b
-# %b -> con
-# &con -> output
-# """
-# print(solution(input))
 test_and_submit(puzzle, solution, False)
